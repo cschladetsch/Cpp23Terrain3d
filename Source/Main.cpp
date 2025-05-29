@@ -13,6 +13,7 @@
 #include "Skybox.h"
 #include "Shader.h"
 #include "Config.h"
+#include "HUD.h"
 
 class Application {
 private:
@@ -24,6 +25,7 @@ private:
     std::unique_ptr<Skybox> skybox;
     std::unique_ptr<Shader> terrainShader;
     std::unique_ptr<Shader> shadowShader;
+    std::unique_ptr<HUD> hud;
     
     bool running = true;
     bool keys[SDL_NUM_SCANCODES] = {false};
@@ -102,6 +104,8 @@ public:
         
         terrainShader = std::make_unique<Shader>("Shaders/terrain.vert", "Shaders/terrain.frag");
         shadowShader = std::make_unique<Shader>("Shaders/shadow.vert", "Shaders/shadow.frag");
+        
+        hud = std::make_unique<HUD>(config.window.width, config.window.height);
         
         setupShadowMap();
         
@@ -322,6 +326,12 @@ public:
             water->render(view, projection, camera->position, lightPos, shadowMap);
         }
         
+        // Render HUD last (on top of everything)
+        if (hud) {
+            float heading = HUD::yawToHeading(camera->yaw);
+            hud->render(heading, camera->pitch, camera->getSpeedKmh());
+        }
+        
         SDL_GL_SwapWindow(window);
         
         // Update window title with speed (only when speed changes significantly)
@@ -334,7 +344,8 @@ public:
     
     void updateWindowTitle() {
         char title[256];
-        snprintf(title, sizeof(title), "3D Terrain Flyover - Speed: %.1f km/h", camera->getSpeedKmh());
+        float heading = HUD::yawToHeading(camera->yaw);
+        snprintf(title, sizeof(title), "3D Terrain Flyover - Heading: %.0f° - Speed: %.1f km/h", heading, camera->getSpeedKmh());
         SDL_SetWindowTitle(window, title);
     }
     

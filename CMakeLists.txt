@@ -25,6 +25,7 @@ add_executable(terrain3d
     Source/Biome.cpp
     Source/Water.cpp
     Source/Skybox.cpp
+    Source/HUD.cpp
 )
 
 target_include_directories(terrain3d PRIVATE 
@@ -54,6 +55,9 @@ configure_file(${CMAKE_SOURCE_DIR}/Shaders/skybox.vert ${CMAKE_BINARY_DIR}/Shade
 configure_file(${CMAKE_SOURCE_DIR}/Shaders/skybox.frag ${CMAKE_BINARY_DIR}/Shaders/skybox.frag COPYONLY)
 configure_file(${CMAKE_SOURCE_DIR}/Shaders/simple.vert ${CMAKE_BINARY_DIR}/Shaders/simple.vert COPYONLY)
 configure_file(${CMAKE_SOURCE_DIR}/Shaders/simple.frag ${CMAKE_BINARY_DIR}/Shaders/simple.frag COPYONLY)
+configure_file(${CMAKE_SOURCE_DIR}/Shaders/ui.vert ${CMAKE_BINARY_DIR}/Shaders/ui.vert COPYONLY)
+configure_file(${CMAKE_SOURCE_DIR}/Shaders/ui.frag ${CMAKE_BINARY_DIR}/Shaders/ui.frag COPYONLY)
+configure_file(${CMAKE_SOURCE_DIR}/Shaders/compass.frag ${CMAKE_BINARY_DIR}/Shaders/compass.frag COPYONLY)
 
 # Copy config file to build directory
 configure_file(${CMAKE_SOURCE_DIR}/config.json ${CMAKE_BINARY_DIR}/config.json COPYONLY)
