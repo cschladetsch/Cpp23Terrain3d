@@ -18,6 +18,7 @@ private:
     bool needsUpdate;
     
     void generateMesh(const PerlinNoise& perlin);
+    void generateMeshWithStitching(const PerlinNoise& perlin, int northLOD, int southLOD, int eastLOD, int westLOD);
     void uploadMesh();
     
 public:
@@ -25,8 +26,10 @@ public:
     ~TerrainChunk();
     
     void generate(const PerlinNoise& perlin);
+    void generateWithNeighbors(const PerlinNoise& perlin, int northLOD, int southLOD, int eastLOD, int westLOD);
     void render();
     void setLOD(int lod);
+    int getLOD() const { return lodLevel; }
     
     glm::ivec2 getCoord() const { return chunkCoord; }
     glm::vec3 getWorldPosition() const;

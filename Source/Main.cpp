@@ -323,7 +323,8 @@ public:
         
         // Render water
         if (water) {
-            water->render(view, projection, camera->position, lightPos, shadowMap);
+            water->render(view, projection, camera->position, lightPos, shadowMap,
+                         0.00008f, 500.0f, glm::vec3(0.02f, 0.02f, 0.08f));
         }
         
         // Render HUD last (on top of everything)
@@ -357,7 +358,13 @@ public:
         terrainShader->setMat4("view", view);
         terrainShader->setMat4("lightSpaceMatrix", lightSpaceMatrix);
         terrainShader->setVec3("lightPos", lightPos);
+        terrainShader->setVec3("viewPos", camera->position);
         terrainShader->setVec3("biomeColor", glm::vec3(0.2f, 0.8f, 0.2f));
+        
+        // Fog parameters for distance blending to skybox
+        terrainShader->setFloat("fogDensity", 0.00008f); // Exponential fog density
+        terrainShader->setFloat("fogStart", 500.0f); // Distance where fog starts
+        terrainShader->setVec3("fogColor", glm::vec3(0.02f, 0.02f, 0.08f)); // Dark sky color to match skybox
         terrainShader->setInt("shadowMap", 1);
         
         if (clipPlane) {

@@ -10,6 +10,9 @@ uniform vec3 lightPos;
 uniform vec3 viewPos;
 uniform sampler2D shadowMap;
 uniform vec3 biomeColor;
+uniform float fogDensity;
+uniform float fogStart;
+uniform vec3 fogColor;
 
 float ShadowCalculation(vec4 fragPosLightSpace) {
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
@@ -53,6 +56,14 @@ void main() {
     
     vec3 ambient = 0.3 * color;
     vec3 result = ambient + (1.0 - shadow) * diffuse;
+    
+    // Calculate fog based on distance from camera
+    float distance = length(FragPos - viewPos);
+    float fogFactor = 1.0 - exp(-fogDensity * max(0.0, distance - fogStart));
+    fogFactor = clamp(fogFactor, 0.0, 1.0);
+    
+    // Blend result with fog color (skybox color)
+    result = mix(result, fogColor, fogFactor);
     
     FragColor = vec4(result, 1.0);
 }

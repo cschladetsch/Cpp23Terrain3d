@@ -35,8 +35,8 @@
     "chunkSize": 64,
     "chunkResolution": 65,
     "viewDistance": 32,
-    "maxLodLevels": 8,
-    "lodDistances": [128, 256, 512, 1024, 2048, 4096, 8192, 16384],
+    "maxLodLevels": 4,
+    "lodDistances": [256, 512, 1024, 2048],
     "heightNoiseSeed": 42,
     "biomeNoiseSeed": 12345,
     "maxChunkPoolSize": 200

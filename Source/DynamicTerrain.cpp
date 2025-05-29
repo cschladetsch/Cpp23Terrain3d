@@ -68,7 +68,7 @@ void DynamicTerrain::updateChunks(const glm::vec3& playerPos, const glm::mat4& v
                 int lod = calculateLOD(distance);
                 chunk->setLOD(lod);
                 
-                // Generate terrain with biome support
+                // Generate terrain with biome support (initial generation)
                 chunk->generate(*heightNoise);
                 chunks[coord] = std::move(chunk);
             }
@@ -80,8 +80,14 @@ void DynamicTerrain::updateChunks(const glm::vec3& playerPos, const glm::mat4& v
     for (auto& [coord, chunk] : chunks) {
         float distance = chunk->getDistanceFrom(playerPos);
         int newLod = calculateLOD(distance);
-        chunk->setLOD(newLod);
+        if (chunk->getLOD() != newLod) {
+            chunk->setLOD(newLod);
+            chunk->generate(*heightNoise); // Regenerate if LOD changed
+        }
     }
+    
+    // Note: Stitching system temporarily disabled for debugging
+    // The edge alignment fix should reduce gaps significantly
 }
 
 int DynamicTerrain::calculateLOD(float distance) const {
@@ -92,6 +98,14 @@ int DynamicTerrain::calculateLOD(float distance) const {
         }
     }
     return config.terrain.maxLodLevels - 1;
+}
+
+int DynamicTerrain::getNeighborLOD(const glm::ivec2& coord) const {
+    auto it = chunks.find(coord);
+    if (it != chunks.end()) {
+        return it->second->getLOD();
+    }
+    return -1; // No neighbor found
 }
 
 std::unique_ptr<TerrainChunk> DynamicTerrain::getOrCreateChunk(const glm::ivec2& coord) {

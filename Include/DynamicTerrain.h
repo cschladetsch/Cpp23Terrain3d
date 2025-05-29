@@ -29,6 +29,7 @@ private:
     
     void updateChunks(const glm::vec3& playerPos, const glm::mat4& viewProjection);
     int calculateLOD(float distance) const;
+    int getNeighborLOD(const glm::ivec2& coord) const;
     std::unique_ptr<TerrainChunk> getOrCreateChunk(const glm::ivec2& coord);
     
 public:

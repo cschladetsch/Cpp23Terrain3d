@@ -38,7 +38,8 @@ public:
     void update(float deltaTime);
     void render(const glm::mat4& view, const glm::mat4& projection, 
                 const glm::vec3& cameraPos, const glm::vec3& lightPos,
-                GLuint terrainShadowMap);
+                GLuint terrainShadowMap, float fogDensity = 0.00008f, 
+                float fogStart = 500.0f, const glm::vec3& fogColor = glm::vec3(0.02f, 0.02f, 0.08f));
     
     void beginReflectionPass();
     void endReflectionPass();

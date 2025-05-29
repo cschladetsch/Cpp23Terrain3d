@@ -152,13 +152,16 @@ void Water::update(float deltaTime) {
 
 void Water::render(const glm::mat4& view, const glm::mat4& projection,
                    const glm::vec3& cameraPos, const glm::vec3& lightPos,
-                   GLuint terrainShadowMap) {
+                   GLuint terrainShadowMap, float fogDensity, float fogStart, const glm::vec3& fogColor) {
     waterShader->use();
     waterShader->setMat4("view", view);
     waterShader->setMat4("projection", projection);
     waterShader->setVec3("cameraPos", cameraPos);
     waterShader->setVec3("lightPos", lightPos);
     waterShader->setFloat("time", time);
+    waterShader->setFloat("fogDensity", fogDensity);
+    waterShader->setFloat("fogStart", fogStart);
+    waterShader->setVec3("fogColor", fogColor);
     waterShader->setInt("reflectionTexture", 0);
     waterShader->setInt("refractionTexture", 1);
     waterShader->setInt("shadowMap", 2);

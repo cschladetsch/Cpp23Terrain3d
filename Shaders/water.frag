@@ -13,6 +13,9 @@ uniform sampler2D normalTexture;
 uniform vec3 lightPos;
 uniform vec3 cameraPos;
 uniform float time;
+uniform float fogDensity;
+uniform float fogStart;
+uniform vec3 fogColor;
 
 const vec3 waterColor = vec3(0.0, 0.3, 0.5);
 const vec3 deepColor = vec3(0.0, 0.1, 0.2);
@@ -63,6 +66,13 @@ void main() {
     // More opaque water
     float depth = gl_FragCoord.z;
     float alpha = clamp(depth * 10.0, 0.7, 0.95);
+    
+    // Apply fog to water
+    float distance = length(FragPos - cameraPos);
+    float fogFactor = 1.0 - exp(-fogDensity * max(0.0, distance - fogStart));
+    fogFactor = clamp(fogFactor, 0.0, 1.0);
+    
+    color = mix(color, fogColor, fogFactor);
     
     FragColor = vec4(color, alpha);
 }
