@@ -6,6 +6,7 @@
 #include <iostream>
 #include <memory>
 #include <chrono>
+#include <algorithm>
 #include "Camera.h"
 #include "DynamicTerrain.h"
 #include "Water.h"
@@ -26,6 +27,7 @@ private:
     
     bool running = true;
     bool keys[SDL_NUM_SCANCODES] = {false};
+    float lastDisplayedSpeed = 0.0f;
     
     GLuint shadowMapFBO;
     GLuint shadowMap;
@@ -103,13 +105,11 @@ public:
         
         setupShadowMap();
         
-        // Mouse control disabled
         
         std::cout << "\nControls:" << std::endl;
         std::cout << "  W/S - Accelerate/Decelerate" << std::endl;
         std::cout << "  A/D - Turn left/right" << std::endl;
-        std::cout << "  E/C - Move up/down" << std::endl;
-        std::cout << "  Z/X - Look up/down" << std::endl;
+        std::cout << "  Z/X - Pitch up/down" << std::endl;
         std::cout << "  ESC - Exit" << std::endl;
         
         return true;
@@ -155,7 +155,6 @@ public:
                 case SDL_KEYUP:
                     keys[event.key.keysym.scancode] = false;
                     break;
-                // Mouse control disabled
             }
         }
     }
@@ -177,33 +176,54 @@ public:
             camera->turnRight(deltaTime);
         }
         
-        // E/C for vertical movement
-        if (keys[SDL_SCANCODE_C]) {
-            camera->position.y -= 50.0f * deltaTime; // Move down
-        }
-        if (keys[SDL_SCANCODE_E]) {
-            camera->position.y += 50.0f * deltaTime; // Move up
-        }
-        
-        // Z/X for pitch control
+        // Z/X for pitch
         if (keys[SDL_SCANCODE_Z]) {
-            camera->pitch += 50.0f * deltaTime; // Look up
-            if (camera->pitch > 89.0f) camera->pitch = 89.0f;
-            camera->updateCameraVectors();
+            camera->pitchUp(deltaTime);
         }
         if (keys[SDL_SCANCODE_X]) {
-            camera->pitch -= 50.0f * deltaTime; // Look down
-            if (camera->pitch < -89.0f) camera->pitch = -89.0f;
-            camera->updateCameraVectors();
+            camera->pitchDown(deltaTime);
         }
         
-        // Update camera position based on velocity
-        camera->update(deltaTime);
         
-        // Always maintain fixed height above terrain
-        float terrainHeight = terrain->getHeightAt(camera->position.x, camera->position.z);
-        // Temporarily comment out to allow free movement for debugging
-        // camera->position.y = terrainHeight + 20.0f; // Always 20m above surface
+        // Calculate proposed movement
+        glm::vec3 movement = camera->front * camera->currentSpeed * deltaTime;
+        glm::vec3 newPosition = camera->position + movement;
+        
+        // Check terrain height at new XZ position
+        float terrainHeight = terrain->getHeightAt(newPosition.x, newPosition.z);
+        float minHeight = terrainHeight + config.camera.minHeightAboveTerrain;
+        
+        // Ensure new position never goes below minimum height
+        newPosition.y = std::max(newPosition.y, minHeight);
+        
+        // Update camera position (this replaces camera->update)
+        camera->position = newPosition;
+        
+        // Apply air resistance
+        if (std::abs(camera->currentSpeed) > 0.1f) {
+            float deceleration = config.camera.airResistance * deltaTime;
+            if (camera->currentSpeed > 0) {
+                camera->currentSpeed = std::max(0.0f, camera->currentSpeed - deceleration);
+            } else {
+                camera->currentSpeed = std::min(0.0f, camera->currentSpeed + deceleration);
+            }
+        }
+        
+        float currentHeight = camera->position.y - terrainHeight;
+        
+        // Angle camera upward as it approaches the terrain
+        float approachThreshold = config.camera.minHeightAboveTerrain * 2.0f; // Start affecting pitch at 2x min height
+        if (currentHeight < approachThreshold) {
+            float approachFactor = 1.0f - (currentHeight / approachThreshold); // 0 to 1 as we get closer
+            float targetPitch = approachFactor * 30.0f; // Max 30 degrees upward
+            
+            // Gradually adjust pitch upward
+            if (camera->pitch < targetPitch) {
+                float pitchAdjustment = 60.0f * deltaTime; // 60 degrees per second adjustment rate
+                camera->pitch = std::min(camera->pitch + pitchAdjustment, targetPitch);
+                camera->updateCameraVectors();
+            }
+        }
         
         // Update terrain based on camera position
         glm::mat4 projection = glm::perspective(glm::radians(config.rendering.fieldOfView),
@@ -253,7 +273,11 @@ public:
             camera->pitch = -camera->pitch;
             camera->updateCameraVectors();
             
-            if (skybox) skybox->render(camera->getViewMatrix(), projection);
+            if (skybox) {
+                float currentTime = std::chrono::duration<float>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+                glm::vec3 sunDir = glm::normalize(lightPos - camera->position);
+                skybox->render(camera->getViewMatrix(), projection, currentTime, sunDir);
+            }
             renderTerrain(projection, camera->getViewMatrix(), lightSpaceMatrix, lightPos, true);
             
             camera->position.y += distance;
@@ -263,7 +287,11 @@ public:
             
             // Refraction pass
             water->beginRefractionPass();
-            if (skybox) skybox->render(view, projection);
+            if (skybox) {
+                float currentTime = std::chrono::duration<float>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+                glm::vec3 sunDir = glm::normalize(lightPos - camera->position);
+                skybox->render(view, projection, currentTime, sunDir);
+            }
             renderTerrain(projection, view, lightSpaceMatrix, lightPos, false);
             water->endRefractionPass();
         }
@@ -279,7 +307,9 @@ public:
         
         // Render skybox first
         if (skybox) {
-            skybox->render(view, projection);
+            float currentTime = std::chrono::duration<float>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+            glm::vec3 sunDir = glm::normalize(lightPos - camera->position);
+            skybox->render(view, projection, currentTime, sunDir);
         }
         
         // Render terrain
@@ -294,8 +324,12 @@ public:
         
         SDL_GL_SwapWindow(window);
         
-        // Update window title with speed
-        updateWindowTitle();
+        // Update window title with speed (only when speed changes significantly)
+        float currentSpeed = camera->getSpeedKmh();
+        if (std::abs(currentSpeed - lastDisplayedSpeed) > 0.5f) {
+            updateWindowTitle();
+            lastDisplayedSpeed = currentSpeed;
+        }
     }
     
     void updateWindowTitle() {
@@ -325,7 +359,7 @@ public:
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, shadowMap);
         
-        terrain->render(*terrainShader, *shadowShader, lightSpaceMatrix);
+        terrain->render(*terrainShader, *shadowShader, lightSpaceMatrix, projection * view);
         
         if (clipPlane) {
             glDisable(GL_CLIP_DISTANCE0);

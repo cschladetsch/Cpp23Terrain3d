@@ -28,7 +28,10 @@ public:
     void decelerate(float deltaTime);
     void turnLeft(float deltaTime);
     void turnRight(float deltaTime);
+    void pitchUp(float deltaTime);
+    void pitchDown(float deltaTime);
     void update(float deltaTime);
+    void constrainToTerrain(float terrainHeight, float minHeightAboveTerrain);
     void processMouseMovement(float xoffset, float yoffset, bool constrainPitch = true);
     void updateCameraVectors();
     

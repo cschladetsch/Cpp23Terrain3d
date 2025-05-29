@@ -110,18 +110,17 @@ void Skybox::setupMesh() {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 }
 
-void Skybox::render(const glm::mat4& view, const glm::mat4& projection) {
+void Skybox::render(const glm::mat4& view, const glm::mat4& projection, float time, const glm::vec3& sunDirection) {
     glDepthFunc(GL_LEQUAL);
     
     skyboxShader->use();
     glm::mat4 viewNoTranslation = glm::mat4(glm::mat3(view));
     skyboxShader->setMat4("view", viewNoTranslation);
     skyboxShader->setMat4("projection", projection);
-    skyboxShader->setInt("skybox", 0);
+    skyboxShader->setFloat("time", time);
+    skyboxShader->setVec3("sunDirection", sunDirection);
     
     glBindVertexArray(VAO);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
     glDrawArrays(GL_TRIANGLES, 0, 36);
     glBindVertexArray(0);
     

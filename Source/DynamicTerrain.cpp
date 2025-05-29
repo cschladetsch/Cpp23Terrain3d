@@ -106,13 +106,20 @@ std::unique_ptr<TerrainChunk> DynamicTerrain::getOrCreateChunk(const glm::ivec2&
     return std::make_unique<TerrainChunk>(coord, config.terrain.chunkResolution, config.terrain.chunkSize);
 }
 
-void DynamicTerrain::render(Shader& shader, Shader& shadowShader, const glm::mat4& lightSpaceMatrix) {
+void DynamicTerrain::render(Shader& shader, Shader& shadowShader, const glm::mat4& lightSpaceMatrix, const glm::mat4& viewProjection) {
     glm::mat4 model = glm::mat4(1.0f);
     shader.setMat4("model", model);
     
-    // Regular pass with biome colors
+    // Render chunks with frustum culling for infinite terrain
+    int renderedChunks = 0;
+    int totalChunks = chunks.size();
+    
     for (auto& [coord, chunk] : chunks) {
-        chunk->render();
+        // Use frustum culling to only render visible chunks
+        if (chunk->isVisible(viewProjection)) {
+            chunk->render();
+            renderedChunks++;
+        }
     }
 }
 

@@ -20,6 +20,6 @@ public:
     Skybox();
     ~Skybox();
     
-    void render(const glm::mat4& view, const glm::mat4& projection);
+    void render(const glm::mat4& view, const glm::mat4& projection, float time = 0.0f, const glm::vec3& sunDirection = glm::vec3(0.5f, 0.5f, 0.3f));
     GLuint getTextureID() const { return textureID; }
 };

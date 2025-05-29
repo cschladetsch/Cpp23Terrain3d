@@ -44,6 +44,24 @@ void Camera::turnRight(float deltaTime) {
     updateCameraVectors();
 }
 
+void Camera::pitchUp(float deltaTime) {
+    float pitchAmount = turnSpeed * deltaTime;
+    // Reduce pitch rate at higher speeds for more realistic flight
+    pitchAmount *= (1.0f - std::abs(currentSpeed) / maxSpeed * 0.5f);
+    pitch += pitchAmount;
+    if (pitch > 89.0f) pitch = 89.0f;
+    updateCameraVectors();
+}
+
+void Camera::pitchDown(float deltaTime) {
+    float pitchAmount = turnSpeed * deltaTime;
+    // Reduce pitch rate at higher speeds for more realistic flight
+    pitchAmount *= (1.0f - std::abs(currentSpeed) / maxSpeed * 0.5f);
+    pitch -= pitchAmount;
+    if (pitch < -89.0f) pitch = -89.0f;
+    updateCameraVectors();
+}
+
 void Camera::update(float deltaTime) {
     Config& config = Config::getInstance();
     // Apply slight deceleration when no input (air resistance)
@@ -56,9 +74,15 @@ void Camera::update(float deltaTime) {
         }
     }
     
-    // Move camera based on current speed, but only in XZ plane
-    glm::vec3 horizontalFront = glm::normalize(glm::vec3(front.x, 0.0f, front.z));
-    position += horizontalFront * currentSpeed * deltaTime;
+    // Move camera based on current speed in full 3D
+    position += front * currentSpeed * deltaTime;
+}
+
+void Camera::constrainToTerrain(float terrainHeight, float minHeightAboveTerrain) {
+    float minHeight = terrainHeight + minHeightAboveTerrain;
+    if (position.y < minHeight) {
+        position.y = minHeight;
+    }
 }
 
 void Camera::processMouseMovement(float xoffset, float yoffset, bool constrainPitch) {

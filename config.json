@@ -12,10 +12,10 @@
     "waterReflectionScale": 0.5,
     "fieldOfView": 60.0,
     "nearPlane": 0.1,
-    "farPlane": 1000.0,
-    "enableShadows": false,
-    "enableWater": false,
-    "enableSkybox": false
+    "farPlane": 50000.0,
+    "enableShadows": true,
+    "enableWater": true,
+    "enableSkybox": true
   },
   
   "camera": {
@@ -34,12 +34,12 @@
   "terrain": {
     "chunkSize": 64,
     "chunkResolution": 65,
-    "viewDistance": 8,
-    "maxLodLevels": 4,
-    "lodDistances": [128, 256, 384, 512],
+    "viewDistance": 32,
+    "maxLodLevels": 8,
+    "lodDistances": [128, 256, 512, 1024, 2048, 4096, 8192, 16384],
     "heightNoiseSeed": 42,
     "biomeNoiseSeed": 12345,
-    "maxChunkPoolSize": 50
+    "maxChunkPoolSize": 200
   },
   
   "biomes": {

@@ -35,7 +35,7 @@ public:
     DynamicTerrain();
     
     void update(const glm::vec3& playerPos, const glm::mat4& viewProjection);
-    void render(Shader& shader, Shader& shadowShader, const glm::mat4& lightSpaceMatrix);
+    void render(Shader& shader, Shader& shadowShader, const glm::mat4& lightSpaceMatrix, const glm::mat4& viewProjection = glm::mat4(1.0f));
     float getHeightAt(float x, float z) const;
     glm::vec3 getColorAt(float x, float z, float height) const;
 };

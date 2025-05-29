@@ -60,9 +60,9 @@ void main() {
     float spec = pow(max(dot(normal, halfwayDir), 0.0), 128.0);
     color += vec3(1.0) * spec;
     
-    // Depth fade for shore blending
+    // More opaque water
     float depth = gl_FragCoord.z;
-    float alpha = clamp(depth * 10.0, 0.3, 0.9);
+    float alpha = clamp(depth * 10.0, 0.7, 0.95);
     
     FragColor = vec4(color, alpha);
 }
