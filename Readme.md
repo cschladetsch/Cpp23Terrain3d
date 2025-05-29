@@ -1,31 +1,51 @@
 # 3D Terrain Flyover
 
-A high-performance C++23 terrain renderer featuring dynamic world generation, realistic biomes, water simulation, and smooth flight controls. Optimized for 60+ FPS on RTX 2070.
+A comprehensive C++23 flight simulator featuring infinite procedural terrain, realistic Melbourne night sky with astronomically accurate stars, and professional aviation instrumentation. Experience seamless flight over dynamically generated landscapes with atmospheric fog effects and smooth performance.
 
-## Features
+## 🌟 Key Features
 
-### Terrain Generation
-- **Dynamic chunk-based loading** - Infinite terrain that loads/unloads based on camera position
-- **4 distinct biomes** with smooth transitions:
-  - 🏜️ **Desert** - Rolling sand dunes with orange-yellow gradient
-  - 🌲 **Forest** - Lush green hills with varied terrain
-  - 🏔️ **Mountains** - Towering peaks with snow caps
-  - ❄️ **Tundra** - Icy plains with permafrost coloring
-- **Multi-scale Perlin noise** for realistic terrain features
-- **Level of Detail (LOD)** system for distant chunks
+### 🗺️ Infinite Terrain System
+- **Dynamic Chunk Loading** - Seamless infinite world with 32-chunk view distance
+- **4-Level LOD System** - Optimized performance with distance-based detail reduction
+- **Edge Stitching** - Smooth transitions between terrain blocks without gaps
+- **4 Distinct Biomes** with realistic transitions:
+  - 🏜️ **Desert** - Rolling sand dunes with warm orange-yellow gradients
+  - 🌲 **Forest** - Lush green hills with varied elevation
+  - 🏔️ **Mountains** - Towering peaks with snow-capped summits
+  - ❄️ **Tundra** - Icy plains with blue-white permafrost coloring
+- **Multi-Scale Perlin Noise** - Continental, regional, and local detail layers
 
-### Rendering Features
-- **Real-time shadow mapping** with soft shadows
-- **Water rendering** with reflections and refractions
-- **Procedural skybox** with gradient colors
-- **Biome-specific coloring** with height-based variations
+### 🌌 Melbourne Night Sky
+- **Astronomically Accurate** - Real star positions and magnitudes for Melbourne, Australia (-37.8° S)
+- **25+ Major Stars** - Including Sirius, Canopus, Alpha Centauri, and the iconic Southern Cross
+- **Realistic Effects**:
+  - Magnitude-based star sizing (brighter stars appear larger)
+  - Atmospheric scintillation (twinkling effects)
+  - Diffraction spikes for bright stars
+  - Background star field using procedural noise
+- **Dynamic Atmosphere** - Stars fade naturally based on sky brightness
 
-### Flight Controls
-- **Velocity-based movement** with acceleration/deceleration
-- **Speed indicator** in window title (km/h)
-- **Automatic terrain following** to prevent flying through ground
-- **Mouse look** for precise camera control
-- **Smooth turning** with speed-dependent turn rates
+### ✈️ Professional Flight Controls
+- **Full 3D Movement** - Pitch, yaw, and velocity-based flight physics
+- **Aviation Instrumentation**:
+  - Graphical compass with cardinal directions
+  - Real-time heading indicator (0-360°)
+  - Speed display in km/h
+  - Altitude management above terrain
+- **Realistic Physics**:
+  - Acceleration/deceleration with air resistance
+  - Speed-dependent turn rates
+  - Automatic terrain collision avoidance
+
+### 🌊 Advanced Water Rendering
+- **Realistic Water Surface** - Reflections, refractions, and wave simulation
+- **Dynamic Effects** - Moving water with specular highlights
+- **Enhanced Opacity** - Improved visibility and depth perception
+
+### 🌫️ Atmospheric Effects
+- **Exponential Distance Fog** - Smooth blending from terrain to skybox
+- **Skybox Integration** - Fog color matches Melbourne night sky
+- **Enhanced Depth Perception** - Improved sense of scale in infinite terrain
 
 ## Building
 
@@ -52,7 +72,7 @@ cmake .. -DCMAKE_BUILD_TYPE=Release
 make -j$(nproc)
 ```
 
-## Controls
+## 🎮 Controls
 
 | Key/Input | Action |
 |-----------|--------|
@@ -60,31 +80,91 @@ make -j$(nproc)
 | **S** | Decelerate / Reverse |
 | **A** | Turn left |
 | **D** | Turn right |
-| **Mouse** | Look around (click to capture) |
+| **Z** | Pitch up (climb) |
+| **X** | Pitch down (dive) |
 | **ESC** | Exit |
 
-## Performance
+### 🧭 Navigation Instruments
+- **Compass** - Circular compass in top-right corner with cardinal directions
+- **Heading Display** - Numerical heading (0-360°) in window title
+- **Speed Indicator** - Current speed in km/h displayed in window title
+- **Altitude Management** - Automatic terrain following prevents underground flight
 
-Optimized for smooth 60Hz gameplay on RTX 2070:
-- Reduced shadow resolution for performance
-- Half-resolution water reflections
-- Efficient chunk pooling system
-- LOD system reduces polygon count for distant terrain
+## 📊 Performance & Optimization
 
-## Testing
+**Target Performance**: 60+ FPS on RTX 2070 class hardware
 
-Run unit tests:
+### Performance Features
+- **Dynamic LOD System** - 4 levels of detail reduce polygon count for distant terrain
+- **Frustum Culling** - Only render visible terrain chunks (distance-based culling for stability)
+- **Chunk Pooling** - Memory reuse prevents allocation overhead during flight
+- **Efficient Shaders** - Optimized GLSL with minimal branching
+- **Fog Optimization** - Exponential fog more efficient than linear variants
+
+### Memory Usage
+- **~200MB RAM** for 32-chunk view distance
+- **Chunk Size** - 64x64 units with 65x65 vertex resolution
+- **Pool Management** - 200 pre-allocated chunks for smooth loading
+
+### Graphics Settings
+- **Shadow Resolution** - 1024x1024 shadow maps with PCF soft shadows
+- **Water Reflections** - Half-resolution reflections for performance balance
+- **Fog Distance** - Starts at 500m with exponential falloff
+- **View Distance** - 32 chunks (2048 units) maximum render distance
+
+## 🧪 Testing
+
+### Unit Tests
 ```bash
 cd build
-ctest
+ctest                    # Run all tests
+./test_perlin           # Test noise generation
+./test_camera           # Test camera controls  
+./test_biome            # Test biome system
 ```
 
-## Technical Details
+### Test Coverage
+- ✅ **Perlin Noise** - Deterministic generation, range validation
+- ✅ **Camera System** - Movement, rotation, matrix calculations
+- ✅ **Biome Generation** - Height calculation, color interpolation
+- ❌ **Graphics Pipeline** - Requires manual testing (no headless OpenGL)
 
-- **Language**: C++23
-- **Graphics API**: OpenGL 3.3 Core
-- **Platform**: Cross-platform (tested on Windows 11 WSL)
-- **Architecture**: Component-based with dynamic terrain chunks
+## 🔧 Technical Architecture
+
+### Core Technologies
+- **Language**: C++23 with modern features
+- **Graphics API**: OpenGL 3.3 Core Profile
+- **Mathematics**: GLM for vectors, matrices, and transformations
+- **Window Management**: SDL2 for cross-platform compatibility
+- **Configuration**: JSON-based external configuration system
+
+### System Architecture
+```
+Application (Main.cpp)
+├── Camera System (3D flight controls)
+├── Dynamic Terrain (infinite chunk management)
+│   ├── Terrain Chunks (individual mesh generation)
+│   ├── Biome System (procedural landscape variety)
+│   └── Perlin Noise (multi-octave terrain generation)
+├── Water Rendering (reflections, refractions, waves)
+├── Skybox System (Melbourne night sky with stars)
+├── HUD System (compass, heading, speed indicators)
+└── Shader Management (GLSL compilation and uniforms)
+```
+
+### Design Patterns
+- **RAII** - Automatic OpenGL resource management
+- **Component System** - Modular, loosely-coupled architecture
+- **Configuration-Driven** - External JSON for all parameters
+- **Smart Pointers** - Modern C++ memory management with std::unique_ptr
+
+## 🌍 Platform Support
+
+**Tested Platforms**:
+- ✅ **Windows 11 WSL2** - Primary development environment
+- ✅ **Ubuntu 22.04+** - Native Linux support
+- ⚠️ **Windows Native** - Should work but not extensively tested
+- ⚠️ **macOS** - OpenGL 3.3 support required
 
 ## License
 
