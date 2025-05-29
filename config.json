@@ -1,0 +1,135 @@
+{
+  "window": {
+    "width": 1280,
+    "height": 720,
+    "title": "3D Terrain Flyover",
+    "fullscreen": false,
+    "vsync": true
+  },
+  
+  "rendering": {
+    "shadowMapResolution": 1024,
+    "waterReflectionScale": 0.5,
+    "fieldOfView": 60.0,
+    "nearPlane": 0.1,
+    "farPlane": 1000.0,
+    "enableShadows": false,
+    "enableWater": false,
+    "enableSkybox": false
+  },
+  
+  "camera": {
+    "initialPosition": [32.0, 50.0, 32.0],
+    "initialYaw": -90.0,
+    "initialPitch": -45.0,
+    "acceleration": 20.0,
+    "maxSpeed": 100.0,
+    "reverseSpeedFactor": 0.5,
+    "mouseSensitivity": 0.1,
+    "turnSpeed": 50.0,
+    "airResistance": 5.0,
+    "minHeightAboveTerrain": 10.0
+  },
+  
+  "terrain": {
+    "chunkSize": 64,
+    "chunkResolution": 65,
+    "viewDistance": 8,
+    "maxLodLevels": 4,
+    "lodDistances": [128, 256, 384, 512],
+    "heightNoiseSeed": 42,
+    "biomeNoiseSeed": 12345,
+    "maxChunkPoolSize": 50
+  },
+  
+  "biomes": {
+    "desert": {
+      "heightScale": 25.0,
+      "roughness": 0.2,
+      "baseColor": [0.96, 0.87, 0.5],
+      "midColor": [0.85, 0.65, 0.35],
+      "peakColor": [0.6, 0.4, 0.2],
+      "colorThreshold1": 15.0,
+      "colorThreshold2": 25.0
+    },
+    "forest": {
+      "heightScale": 40.0,
+      "roughness": 0.6,
+      "baseColor": [0.15, 0.5, 0.1],
+      "midColor": [0.08, 0.3, 0.05],
+      "peakColor": [0.4, 0.35, 0.25],
+      "colorThreshold1": 20.0,
+      "colorThreshold2": 35.0
+    },
+    "mountains": {
+      "heightScale": 120.0,
+      "roughness": 0.9,
+      "baseColor": [0.4, 0.35, 0.3],
+      "midColor": [0.55, 0.5, 0.45],
+      "peakColor": [1.0, 1.0, 1.0],
+      "colorThreshold1": 40.0,
+      "colorThreshold2": 70.0
+    },
+    "tundra": {
+      "heightScale": 30.0,
+      "roughness": 0.5,
+      "baseColor": [0.35, 0.45, 0.35],
+      "midColor": [0.75, 0.8, 0.85],
+      "peakColor": [0.95, 0.97, 1.0],
+      "colorThreshold1": 12.0,
+      "colorThreshold2": 22.0
+    }
+  },
+  
+  "water": {
+    "level": 0.0,
+    "gridSize": 256,
+    "meshDivisions": 100,
+    "waveSpeed": 0.03,
+    "damping": 0.999,
+    "color": [0.0, 0.3, 0.5],
+    "deepColor": [0.0, 0.1, 0.2],
+    "transparency": 0.7,
+    "reflectionDistortion": 0.02,
+    "specularPower": 128.0
+  },
+  
+  "lighting": {
+    "sunOffset": [100.0, 200.0, 100.0],
+    "ambientStrength": 0.3,
+    "shadowBias": 0.005,
+    "shadowNearPlane": 1.0,
+    "shadowFarPlane": 500.0,
+    "shadowOrthoSize": 200.0
+  },
+  
+  "perlinNoise": {
+    "terrainScales": {
+      "continental": 0.002,
+      "regional": 0.005,
+      "local": 0.01
+    },
+    "octaves": {
+      "continental": 2,
+      "regional": 4,
+      "local": 6
+    },
+    "persistence": {
+      "continental": 0.4,
+      "regional": 0.5,
+      "local": 0.6
+    },
+    "weights": {
+      "continental": 0.5,
+      "regional": 0.35,
+      "local": 0.15
+    }
+  },
+  
+  "performance": {
+    "targetFPS": 60,
+    "enableVsync": true,
+    "multiThreadedChunkGeneration": true,
+    "chunkGenerationThreads": 4
+  }
+}

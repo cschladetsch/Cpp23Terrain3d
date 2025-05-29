@@ -1,0 +1,10 @@
+{
+  "camera": {
+    "acceleration": 20.0,
+    "maxSpeed": 100.0,
+    "reverseSpeedFactor": 0.5,
+    "mouseSensitivity": 0.1,
+    "turnSpeed": 50.0,
+    "airResistance": 5.0
+  }
+}
