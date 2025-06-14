@@ -2,6 +2,10 @@
 
 A comprehensive C++23 flight simulator featuring infinite procedural terrain, realistic Melbourne night sky with astronomically accurate stars, and professional aviation instrumentation. Experience seamless flight over dynamically generated landscapes with atmospheric fog effects and smooth performance.
 
+## Demo
+
+![Demo](resources/Demo.jpg)
+
 ## 🌟 Key Features
 
 ### 🗺️ Infinite Terrain System
